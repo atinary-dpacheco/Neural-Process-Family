@@ -6,13 +6,13 @@ import warnings
 import imageio
 import matplotlib.pyplot as plt
 import seaborn as sns
-from matplotlib.cbook import MatplotlibDeprecationWarning
 from skimage import transform
 
 try:
     from pygifsicle import optimize
 except ImportError:
     pass
+
 
 __all__ = ["giffify", "plot_config"]
 logger = logging.getLogger(__name__)
@@ -96,7 +96,7 @@ def plot_config(
     finally:
         with warnings.catch_warnings():
             # filter out depreciation warnings when resetting defaults
-            warnings.filterwarnings("ignore", category=MatplotlibDeprecationWarning)
+            # warnings.filterwarnings("ignore", category=MatplotlibDeprecationWarning)
             # reset defaults
             plt.rcParams.update(defaults)
 
@@ -137,6 +137,7 @@ def giffify(
         Arguments to `single_fig` that should not be swept over.
     """
     figs = []
+    size = None
     for i, v in enumerate(sweep_values):
         fig = gen_single_fig(**{sweep_parameter: v}, **kwargs)
         plt.close()
