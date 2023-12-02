@@ -7,7 +7,6 @@ doc/
 *archive*
 *test*
 !utils/data
-src/
 logs/
 .vscode
 __MACOSX/
