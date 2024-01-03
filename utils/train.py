@@ -1,11 +1,8 @@
 import logging
 import os
-import warnings
 from copy import deepcopy
-from functools import partial
 
 import numpy as np
-
 import skorch
 import torch
 from skorch import NeuralNet
@@ -55,7 +52,7 @@ def train_models(
     seed=None,
     datasets_kwargs=dict(),
     models_kwargs=dict(),
-    **kwargs
+    **kwargs,
 ):
     """
     Train or loads the models.
@@ -299,6 +296,7 @@ def train_models(
 
                 trainer.module_.cpu()  # make sure on cpu
                 torch.cuda.empty_cache()  # empty cache for next run
+                torch.cuda.ipc_collect()  # collect garbage
 
                 trainers[suffix] = trainer
 
@@ -335,7 +333,8 @@ def _best_loss(model, mode="valid"):
             if history["{}_loss_best".format(mode)]:
                 best_epoch = len(model.history) - epoch
                 return history["{}_loss".format(mode)], best_epoch
-    except:
+    except Exception as exc:
+        logger.error(f"Error in _best_loss: {exc}")
         return None, None
 
 
