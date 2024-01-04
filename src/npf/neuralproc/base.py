@@ -350,7 +350,7 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
         p_y_loc = self.p_y_loc_transformer(p_y_loc)
         p_y_scale = self.p_y_scale_transformer(p_y_scale)
 
-        #! shuld probably pool before p_y_scale_transformer
+        # should probably pool before p_y_scale_transformer
         if not self.is_heteroskedastic:
             # to make sure not heteroskedastic you pool all the p_y_scale
             # only exact when X_trgt is a constant (e.g. grid case). If not it's a descent approx
@@ -501,9 +501,11 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
             # instead of q(z|cntxt). note that actually does q(z|trgt) because trgt has cntxt
             R_from_trgt = self.encode_globally(X_trgt, Y_trgt)
             q_zCct = self.infer_latent_dist(X_trgt, R_from_trgt)
+            # context and target together
             sampling_dist = q_zCct
         else:
             q_zCct = None
+            # only context
             sampling_dist = q_zCc
 
         # size = [n_z_samples, batch_size, *n_lat, z_dim]

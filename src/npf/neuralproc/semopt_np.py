@@ -82,10 +82,9 @@ class SemoptNP(AttnLNP, torch.nn.Module):
         )
 
         if self.training:
-            dists, z_priors, z_posteriors = dists
-            zs = [d.rsample([self.n_z_samples]) for d in z_priors]
-            z = torch.stack(zs)
-            batch_size, n_z_samples, r_size = z.shape
+            dists, z_priors, z_posteriors, z = dists
+            batch_size, r_size = z.shape
+            z = z.unsqueeze(0).view(1, batch_size, -1, r_size)
             # z: (n_z_samples,batch_size,n_trgt,z_size)
             # q_zCc: Independent(Normal(loc=torch.Size([8,1,128]), scale=torch.size([8,1,128])))
 
@@ -93,12 +92,6 @@ class SemoptNP(AttnLNP, torch.nn.Module):
             # create single Independent distribution out of list of MultivariateNormal
             # add nz_dimension to mu,sigma to the left
             # mu: (batch_size,n_trgt,y_dim) -> (n_z_samples,batch_size,n_trgt,y_dim)
-            z = z.view(
-                self.n_z_samples,
-                batch_size,
-                -1,
-                self.semopt_model.hp["model"]["z_size"],
-            )
             q_zCc = self.multivariate_normal_diag(z_priors, batch_size)
             q_zCct = self.multivariate_normal_diag(z_posteriors, batch_size)
         else:
