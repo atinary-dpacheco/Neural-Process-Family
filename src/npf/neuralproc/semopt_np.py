@@ -99,12 +99,8 @@ class SemoptNP(AttnLNP, torch.nn.Module):
             q_zCc, q_zCct, z = None, None, None
             dists = dists[0]
         # get torch distribution from dists
-        mus = torch.stack([dist.loc for dist in dists]).expand(
-            self.n_z_samples, -1, -1, -1
-        )
-        sigmas = torch.stack([dist.variance for dist in dists]).expand(
-            self.n_z_samples, -1, -1, -1
-        )
+        mus = torch.stack([dist.loc for dist in dists]).unsqueeze(dim=1)
+        sigmas = torch.stack([dist.variance.sqrt() for dist in dists]).unsqueeze(dim=1)
         p_y_trgt = helpers.MultivariateNormalDiag(mus, sigmas)
         # dists = [normal.Normal(mu,sigma) for mu,sigma in zip(mus,sigmas)]
         # # mu = mu.unsqueeze(0).expand(self.n_z_samples,-1,-1,-1)
